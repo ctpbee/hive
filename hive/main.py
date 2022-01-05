@@ -1,7 +1,7 @@
 from json import load
-from typing import Text, Dict
+from typing import Text, Dict, List
 
-from hive.task import Task
+from hive.task import Task, TaskStatus
 
 
 class Hive(object):
@@ -10,7 +10,8 @@ class Hive(object):
     ROOT_PATH = ""
 
     def __init__(self):
-        self.task_set = {}
+        self.task_set: {Text: Task} = {}
+        self.wait_task_queue = []
 
     def init_from_config(self):
         """ 从配置中读取Task任务 """
@@ -32,11 +33,25 @@ class Hive(object):
         for i, v in data.items():
             setattr(self, i, v)
 
-    def read_task(self, task):
-        pass
+    def detect_task(self) -> List[Task]:
+        """
+        探测root_path的task本地文件内容有无发生改变
+
+        """
+        tasks = []
+        import os
+        # todo: 探测数据
+        for file in os.listdir(self.root_path()):
+            pass
+        return tasks
 
     def hot_load_task(self, task: Task):
         """ 热更新当前任务 """
+        if task.name in self.task_set:
+            if self.task_set[task.name].status == TaskStatus.PENDING:
+                self.wait_task_queue.append(task)
+            else:
+                self.task_set[task.name] = task
 
     def run(self):
         """主体运行函数 执行Task"""
@@ -44,4 +59,6 @@ class Hive(object):
         self.init_from_config()
 
         while True:
-            pass
+            # 探测是否更新task任务载入
+            for task in self.detect_task():
+                self.hot_load_task(task)

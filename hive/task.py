@@ -8,6 +8,13 @@ class TaskType(Enum):
     ONCE = 2
 
 
+class TaskStatus(Enum):
+    READY = 0
+    PENDING = 1
+    FINISHED = 2
+    EXIT = 3
+
+
 class Owner(Enum):
     MAIN = "Main System"
 
