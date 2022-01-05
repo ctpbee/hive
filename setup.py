@@ -2,7 +2,7 @@ from setuptools import setup
 
 pkgs = []
 
-install_requires = []
+install_requires = ["ctpbee"]
 setup(
     name='hive',
     version=0.11,
@@ -14,7 +14,7 @@ setup(
     packages=pkgs,
     install_requires=install_requires,
     platforms=["Linux"],
-    package_dir={'ctpbee': 'ctpbee'},
+    package_dir={'hive': 'hive'},
     zip_safe=False,
     include_package_data=True,
     ext_modules=[],
