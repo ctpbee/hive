@@ -1,7 +1,13 @@
+from datetime import datetime
 from json import load
 from typing import Text, Dict, List
 
+from hive.log import logger
 from hive.task import Task, TaskStatus
+
+
+def run(task: Task):
+    task.__run__()
 
 
 class Hive(object):
@@ -19,6 +25,9 @@ class Hive(object):
     def root_path(self) -> Text:
         """ 获取当前的根目录 """
         return self.ROOT_PATH
+
+    def insert(self, task: Task):
+        self.task_set[task.name] = task
 
     def read_config_from_json(self, json_path: Text):
         """
@@ -55,10 +64,25 @@ class Hive(object):
 
     def run(self):
         """主体运行函数 执行Task"""
+        logger.info(f"Hive started")
 
         self.init_from_config()
 
         while True:
             # 探测是否更新task任务载入
-            for task in self.detect_task():
-                self.hot_load_task(task)
+
+            current = datetime.now()
+            for task in self.task_set.values():
+                if task.auth_time(time=current) and not task.alive():
+                    """ 当前时间正确且当前进程不活跃 """
+                    logger.info(f"start task: {task.name}")
+                    run(task)
+
+                if not task.auth_time(time=current) and task.alive():
+                    logger.info(f"stop task: {task.name}")
+                    task.kill()
+
+
+if __name__ == '__main__':
+    hive = Hive()
+    hive.run()
