@@ -18,11 +18,13 @@ pip3 install hive
 # 快速启动
 
 ```
-hive -f config.json -l info
+hive -f config.json
 ```
 
 # 功能支持
 
 -[ ] 支持热度更新任务
+
 -[ ] 每日自动调度任务
+
 -[ ] 每日邮件执行任务通知

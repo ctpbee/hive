@@ -5,6 +5,10 @@ from typing import Text
 
 
 class TaskType(Enum):
+    """
+    ONCE 符合要求执行一次 适合每天执行一次的任务
+    LOOP 指定时间段内符合一次 适合长期任务 需要关闭的那种
+    """
     LOOP = 1
     ONCE = 2
 
@@ -25,7 +29,7 @@ class Task(object):
     任务执行
     """
 
-    def __init__(self, name: Text, owner: Owner, type_: TaskType):
+    def __init__(self, name: Text, owner: Owner, type_: TaskType = TaskType.LOOP):
         self.name = name
         self.create_time = datetime.now()
         self._owner = owner
@@ -42,14 +46,16 @@ class Task(object):
         """ 实现此类以实现任务正确时间开启与关闭 """
         raise NotImplemented
 
-    def __run__(self):
-        self._pro = Process(target=self.__execute__())
+    def run(self):
+        self._pro = Process(target=self.__execute__)
         self._pro.start()
 
-
-    def pid(self) -> int:
+    def pid(self) -> int or None:
         """ 返回子进程的ID """
-        return self._pro.pid
+        if self._pro is None:
+            return None
+        else:
+            return self._pro.pid
 
     def alive(self) -> bool:
         """ 判断子进程是否还活着 """
