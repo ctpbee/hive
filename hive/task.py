@@ -57,6 +57,9 @@ class Task(object):
         else:
             return self._pro.pid
 
+    def task_type(self) -> TaskType:
+        return self._type
+
     def alive(self) -> bool:
         """ 判断子进程是否还活着 """
         if self._pro is None:

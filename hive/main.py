@@ -4,7 +4,7 @@ from json import load
 from typing import Text, Dict, List
 
 from hive.log import logger
-from hive.task import Task, TaskStatus
+from hive.task import Task, TaskStatus, TaskType
 
 
 class Hive(object):
@@ -71,8 +71,16 @@ class Hive(object):
                     task.run()
 
                 if not task.auth_time(time=current) and task.alive():
-                    logger.info(f"stop task: {task.name}")
-                    task.kill()
+                    if task.task_type() == TaskType.LOOP:
+                        """当设置为持续工作模式时候 需要手动停止 """
+                        logger.info(f"stop loop task: {task.name}")
+                        task.kill()
+                    elif task.task_type() == TaskType.ONCE:
+                        self.task_set.pop(task.name)
+                        self.task_set.pop()
+
+
+            # if new day, re_callback the task
 
 
 if __name__ == '__main__':
