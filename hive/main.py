@@ -3,25 +3,29 @@ from datetime import datetime
 from json import load
 from typing import Text, Dict, List
 
+from ctpbee.date import trade_dates
+
 from hive.log import logger
 from hive.task import Task, TaskStatus, TaskType
 
 
 class Hive(object):
-
     def __init__(self):
         self.task_set: {Text: Task} = {}
-        self.wait_task_queue = []
+        self.__wait_task_queue = []
+        self._day = []
 
     def init_from_config(self):
-        """ 从配置中读取Task任务 """
+        """从配置中读取Task任务"""
 
-    def root_path(self) -> Text:
-        """ 获取当前的根目录 """
+    @staticmethod
+    def root_path() -> Text:
+        """获取当前的根目录"""
         return os.environ["ROOT_PATH"]
 
-    def insert(self, task: Task):
-        self.task_set[task.name] = task
+    def insert(self, *task):
+        for ta in task:
+            self.task_set[ta.name] = ta
 
     def read_config_from_json(self, json_path: Text):
         """
@@ -43,16 +47,17 @@ class Hive(object):
         """
         tasks = []
         import os
+
         # todo: 探测数据
         for file in os.listdir(self.root_path()):
             pass
         return tasks
 
     def hot_load_task(self, task: Task):
-        """ 热更新当前任务 """
+        """热更新当前任务"""
         if task.name in self.task_set:
             if self.task_set[task.name].status == TaskStatus.PENDING:
-                self.wait_task_queue.append(task)
+                self.__wait_task_queue.append(task)
             else:
                 self.task_set[task.name] = task
 
@@ -61,28 +66,50 @@ class Hive(object):
         logger.info(f"Hive Started")
 
         self.init_from_config()
-
+        c = None
         while True:
             current = datetime.now()
-            for task in self.task_set.values():
-                if task.auth_time(time=current) and not task.alive():
-                    """ 当前时间正确且当前进程不活跃 """
-                    logger.info(f"start task: {task.name}")
-                    task.run()
+            if c is None:
+                c = current.hour
+            for task_name in list(self.task_set.keys()):
+                task = self.task_set[task_name]
+                if task.auth_time(time=current):
+                    """当前时间正确且当前进程不活跃"""
 
-                if not task.auth_time(time=current) and task.alive():
-                    if task.task_type() == TaskType.LOOP:
-                        """当设置为持续工作模式时候 需要手动停止 """
+                    if task.task_type() == TaskType.LOOP and not task.alive():
+                        logger.info(f"start task: {task.name}")
+                        task.run()
+                    elif (
+                        task.task_type() == TaskType.ONCE_AGAIN
+                        and not task.task_run_status()
+                    ):
+                        """仅当一次任务时候 运行一次"""
+                        logger.info(f"start task: {task.name}")
+                        task.run()
+
+                if not task.auth_time(time=current):
+                    if task.task_type() == TaskType.LOOP and task.alive():
+                        """当设置为持续工作模式时候 需要手动停止"""
                         logger.info(f"stop loop task: {task.name}")
                         task.kill()
-                    elif task.task_type() == TaskType.ONCE:
-                        self.task_set.pop(task.name)
-                        self.task_set.pop()
 
+                    elif (
+                        task.task_type() == TaskType.ONCE_AGAIN
+                        and task.task_run_status()
+                    ):
+                        task = self.task_set.pop(task.name)
+                        task.reset_task()
+                        self.__wait_task_queue.append(task)
 
             # if new day, re_callback the task
+            if current.hour != c and c == 0 and current.date() in trade_dates:
+                for task in self.__wait_task_queue:
+                    self.task_set[task.name] = task
+                self.__wait_task_queue.clear()
+
+            c = datetime.now().hour
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     hive = Hive()
     hive.run()
