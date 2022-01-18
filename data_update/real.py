@@ -35,6 +35,9 @@ class Data(CtpbeeApi):
             if contract.local_symbol not in codes:
                 self.rd.rpush(RD_CONTRACT_NAME, contract.local_symbol)
 
+    def on_init(self, init: bool) -> None:
+        print(self.usage)
+
 
 def get_redis_connection() -> Redis:
     uri = os.environ.get("REDIS_URI") or "127.0.0.1:6379"
@@ -44,8 +47,12 @@ def get_redis_connection() -> Redis:
 
 
 class DataInsertTask(Task):
-    def __init__(self, c_type=TaskType.LOOP):
+    def __init__(self, c_type=TaskType.LOOP, front=300):
         super().__init__("数据录制", type_=c_type)
+        for i, v in hickey.open_trading["ctp"].items():
+            setattr(hickey, i, hickey.add_seconds(getattr(hickey, i), front))
+
+        self.hickey = hickey
 
     def __execute__(self):
         # 此处实现数据每日自动插入redis
@@ -59,7 +66,7 @@ class DataInsertTask(Task):
         app.start()
 
     def auth_time(self, time: datetime) -> bool:
-        return hickey.auth_time(time)
+        return self.hickey.auth_time(time)
 
 
 class CleanDataTask(Task):

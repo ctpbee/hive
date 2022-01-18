@@ -2,7 +2,7 @@ from setuptools import setup
 
 pkgs = []
 
-install_requires = ["ctpbee", "redis"]
+install_requires = ["ctpbee", "redis", "pandas", "numpy", "data_api"]
 setup(
     name="hive",
     version=0.11,
