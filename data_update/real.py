@@ -35,9 +35,6 @@ class Data(CtpbeeApi):
             if contract.local_symbol not in codes:
                 self.rd.rpush(RD_CONTRACT_NAME, contract.local_symbol)
 
-    def on_init(self, init: bool) -> None:
-        print(self.usage)
-
 
 def get_redis_connection() -> Redis:
     uri = os.environ.get("REDIS_URI") or "127.0.0.1:6379"
@@ -140,10 +137,10 @@ class CleanDataTask(Task):
 
     def auth_time(self, time: datetime) -> bool:
         if (
-                str(time.date()) in trade_dates
-                and time.hour == 14
-                and time.minute == 56
-                and time.second == 0
+            str(time.date()) in trade_dates
+            and time.hour == 14
+            and time.minute == 56
+            and time.second == 0
         ):
             return True
         return False

@@ -16,7 +16,7 @@ class Hive(object):
         self._day = []
 
     def init_from_config(self):
-        """ 从配置中读取Task任务 """
+        """从配置中读取Task任务"""
 
     @staticmethod
     def root_path() -> Text:
