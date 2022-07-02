@@ -1,8 +1,7 @@
+from types import FunctionType
 from .log import logger
 from datetime import datetime
-from enum import Enum
 from multiprocessing import Process
-from tkinter.messagebox import NO
 from typing import Text
 
 
@@ -32,12 +31,12 @@ class Task:
         """ 用户应该重写运行逻辑 """
         raise NotImplemented
 
-    def run(self):
+    def run(self) -> FunctionType:
         raise NotImplemented
 
     def _run(self):
         logger.info(f"task: {self.name} started")
-        self._pro = Process(target=self.run)
+        self._pro = Process(target=self.run(),daemon=True)
         self._pro.start()
 
     def kill(self):

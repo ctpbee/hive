@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from json import load
-from time import time
+from time import sleep, time
 from typing import Text, Dict, List
 
 from ctpbee.date import trade_dates
@@ -61,6 +61,8 @@ class Hive(object):
                 for task in self.__wait_task_queue:
                     self.task_set[task.name] = task
                 self.__wait_task_queue.clear()
+            # 休息 1s 降低cpu使用
+            sleep(1)
 
 
 if __name__ == "__main__":
