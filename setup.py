@@ -2,7 +2,7 @@ from setuptools import setup
 
 pkgs = []
 
-install_requires = ["ctpbee", "redis", "pandas", "numpy", "data_api"]
+install_requires = ["ctpbee", "redis", "pandas", "numpy"]
 setup(
     name="hive",
     version=0.11,
@@ -13,7 +13,7 @@ setup(
     license="Apache2",
     packages=pkgs,
     install_requires=install_requires,
-    platforms=["Linux"],
+    platforms=["Linux", "Windows"],
     package_dir={"hive": "hive"},
     zip_safe=False,
     include_package_data=True,

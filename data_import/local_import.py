@@ -79,16 +79,79 @@ code_map = {
     "IC": {"code": "IC", "exchange": "CFFEX"},
 }
 
-data_api = DataApi(uri="http://192.168.1.239:8124/")
+data_api = DataApi(uri="http://192.168.1.239:8124/", readonly=False, read_only=False, pre_load=True)
 result = []
 
 lock = threading.Lock()
 last_date = 0
+count = 0
+
+
+# def insert_tick(params):
+#     global result
+#     global last_date
+#     global count
+#
+#     path, dt_local_symbol, f_date = params
+#     try:
+#         file_data: pd.DataFrame = pd.read_csv(path).fillna(0)
+#     except OSError:
+#         print("bad filepath: {}".format(path))
+#         return
+#     file_data.rename(columns={"turnover": "amount"}, inplace=True)
+#     vol = file_data.volume[0]
+#     file_data["volume"] = file_data["volume"] - file_data["volume"].shift(1)
+#     file_data.loc[0, ["volume"]] = [vol]
+#     file_data["local_symbol"] = dt_local_symbol
+#     file_data.drop(
+#         [
+#             "millisecond",
+#             "open_price",
+#             "settlement_price",
+#             "pre_close",
+#             "pre_open_interest",
+#             "pre_settlement_price",
+#         ],
+#         axis=1,
+#         inplace=True,
+#     )
+#     try:
+#         file_data["datetime"] = pd.to_datetime(
+#             file_data["datetime"].astype("str"), format="%Y%m%d%H%M%S"
+#         )
+#         # print(file_data)
+#         data = file_data.to_dict(orient="index").values()
+#     except Exception as e:
+#         print(e)
+#
+#         return
+#         # 上面使用多线程保证io快速读取处理
+#     # 下面准备写入全局变量或者写入数据库时候加锁保证唯一性
+#     if lock.acquire():
+#         count += 1
+#         try:
+#             for i in data:
+#                 i['datetime'] = i["datetime"].to_pydatetime()
+#                 # print(i)
+#                 # break
+#                 result.append(Tick(**i))
+#
+#             print(f_date, dt_local_symbol, "--->", len(result))
+#             if count % 10 == 0:
+#                 print("插入TICK 更新result")
+#                 data_api.insert_ticks(result)
+#
+#                 result = []
+#                 last_date = max(f_date, last_date)
+#         finally:
+#             lock.release()
+#     del file_data
 
 
 def insert_tick(params):
     global result
     global last_date
+    global count
 
     path, dt_local_symbol, f_date = params
     file_data: pd.DataFrame = pd.read_csv(path).fillna(0)
@@ -113,19 +176,20 @@ def insert_tick(params):
         file_data["datetime"].astype("str"), format="%Y%m%d%H%M%S"
     ).apply(lambda x: int(x.timestamp()))
     data = file_data.to_dict(orient="index").values()
-
     # 上面使用多线程保证io快速读取处理
     # 下面准备写入全局变量或者写入数据库时候加锁保证唯一性
     if lock.acquire():
+        count += 1
         try:
             for i in data:
-                # print(i["datetime"].to_pydatetime(), type(i["datetime"]))
+                # i['datetime'] = i["datetime"].to_pydatetime()
                 result.append(Tick(**i))
 
             print(f_date, dt_local_symbol, "--->", len(result))
-            if f_date != last_date:
+            if count % 10 == 0:
                 print("插入TICK 更新result")
                 data_api.insert_ticks(result)
+
                 result = []
                 last_date = max(f_date, last_date)
         finally:
@@ -141,7 +205,12 @@ if __name__ == "__main__":
     args = []
     for date in file_path:
         level2_path = os.path.join(root_dir, date)
-        if not date.startswith("2") or len(date) > 8 or date.startswith("2020"):
+        try:
+            p_date = int(date)
+        except ValueError:
+            continue
+        if not date.startswith("2") or len(date) > 8 or date.startswith("2020") \
+                or date.startswith("2021") or not p_date == 20220616:
             continue
 
         for code_csv in os.listdir(level2_path):

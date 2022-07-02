@@ -1,0 +1,3 @@
+[console_scripts]
+hive = hive.cmd:execute
+

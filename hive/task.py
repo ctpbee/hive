@@ -1,85 +1,75 @@
+from .log import logger
 from datetime import datetime
 from enum import Enum
 from multiprocessing import Process
+from tkinter.messagebox import NO
 from typing import Text
 
 
-class TaskType(Enum):
-    """
-    ONCE 符合要求执行一次 适合每天执行一次的任务
-    LOOP 指定时间段内符合一次 适合长期任务 需要关闭的那种
-    """
-
-    LOOP = 1
-    ONCE_AGAIN = 2
-
-
-class TaskStatus(Enum):
-    READY = 0
-    PENDING = 1
-    FINISHED = 2
-    EXIT = 3
-
-
-class Owner(Enum):
-    MAIN = "Main System"
-
-
-class Task(object):
-    """
-    任务执行
+class Task:
+    """ 
+    基础的任务实现  
     """
 
     def __init__(
-        self, name: Text, owner: Owner = Owner.MAIN, type_: TaskType = TaskType.LOOP
+        self, name: Text
     ):
         self.name = name
         self.create_time = datetime.now()
-        self._owner = owner
-        self._type = type_
-        self._task_run = False
         self._pro: None or Process = None
 
-    def __execute__(self):
-        """任务执行主体函数 由execute函数主动执行调用 并进行结果清晰"""
-        raise NotImplemented
-
-    def auth_time(self, time: datetime) -> bool:
-        """实现此类以实现任务正确时间开启与关闭"""
-        raise NotImplemented
-
-    def run(self):
-        self._pro = Process(target=self.__execute__)
-        self._pro.start()
-        self._task_run = True
-
-    def reset_task(self):
-        self._task_run = False
-
-    def pid(self) -> int or None:
-        """返回子进程的ID"""
-        if self._pro is None:
-            return None
-        else:
-            return self._pro.pid
-
-    def task_type(self) -> TaskType:
-        return self._type
-
-    def task_run_status(self):
-        return self._task_run
-
     def alive(self) -> bool:
-        """判断子进程是否还活着"""
         if self._pro is None:
             return False
         else:
-            return self._pro.is_alive() and self._task_run
+            if self._pro.is_alive():
+                return True
+            else:
+                self._pro = None
+                return False
+
+    def should_run(self, c_time: datetime) -> bool:
+        """ 用户应该重写运行逻辑 """
+        raise NotImplemented
+
+    def run(self):
+        raise NotImplemented
+
+    def _run(self):
+        logger.info(f"task: {self.name} started")
+        self._pro = Process(target=self.run)
+        self._pro.start()
 
     def kill(self):
-        """关闭该子进程"""
-        self._pro.kill()
-        self._task_run = False
+        logger.info(f"task: {self.name} killed")
+        return self._kill(self._pro)
 
-    def __repr__(self):
-        return f"Task: {self.name} At {self.create_time}"
+    def flush(self, c_time: datetime) -> int:
+        """ 此方法应该被task的提供者进行重写 """
+        raise NotImplemented
+
+    def _kill(self, process: Process):
+        return process.kill()
+
+    def __repr__(self) -> str:
+        return f"{self.name} with {self.create_time}"
+
+
+class LoopTask(Task):
+
+    def flush(self, c_time: datetime) -> int:
+        if not self.alive() and self.should_run(c_time=c_time):
+            self._run()
+            return 1
+        elif self.alive() and not self.should_run(c_time=c_time):
+            self.kill()
+            return -1
+        return 0
+
+
+class OnceTask(Task):
+    def flush(self, c_time: datetime) -> int:
+        if not self.alive() and self.should_run(c_time=c_time):
+            self._run()
+            return -1
+        return 0

@@ -1,0 +1,19 @@
+Metadata-Version: 2.1
+Name: hive
+Version: 0.11
+Summary: Auto data service with ctpbee for linux. Do not support windows in here
+Home-page: https://github.com/ctpbee/hive
+Author: somewheve
+Author-email: somewheve@gmail.com
+License: Apache2
+Platform: Linux
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+
+UNKNOWN
+

@@ -1,3 +1,3 @@
 from .log import logger
 from .main import Hive
-from .task import Task
+from .task import Task, LoopTask, OnceTask
