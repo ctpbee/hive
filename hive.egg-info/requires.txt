@@ -1,4 +1,0 @@
-ctpbee
-redis
-pandas
-numpy
