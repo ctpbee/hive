@@ -56,11 +56,13 @@ class Hive(object):
                     self.__wait_task_queue.append(task)
                     logger.info(
                         f"task: {task_name} ends and move to next_date")
-            if current.hour == 2 and current.minute == 31:
-                """ 凌晨2点31 将任务恢复回来 """
-                for task in self.__wait_task_queue:
-                    self.task_set[task.name] = task
-                self.__wait_task_queue.clear()
+            if current.hour == 2 and current.minute == 40:
+                """ 凌晨2点40 将任务恢复回来 """
+                if len(self.__wait_task_queue) > 0:
+                    for task in self.__wait_task_queue:
+                        self.task_set[task.name] = task
+                    self.__wait_task_queue.clear()
+                    logger.info(f"更新任务队列")
             # 休息 1s 降低cpu使用
             sleep(1)
 

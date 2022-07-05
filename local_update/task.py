@@ -89,7 +89,7 @@ def delete_data():
         data = list(map(_to_dict, tick_array))
         print(data)
         tick = pd.DataFrame(data)
-        # fixme: 这里的地址需要进行修改 
+        # fixme: 这里的地址需要进行修改
         tick.to_csv(f"D:\\Test\\{contract}.csv")
         del tick
         del data
@@ -107,14 +107,11 @@ class CleanDataTask(OnceTask):
         return delete_data
 
     def should_run(self, c_time: datetime) -> bool:
-        # if (
-        #         str(c_time.date()) in trade_dates
-        #         and c_time.hour == 20
-        #         and c_time.minute == 0
-        #         and c_time.second == 0
-        # ):
-        #     return True
-        # return False
-        if c_time.hour == 0 and c_time.minute == 51:
+        if (
+                str(c_time.date()) in trade_dates
+                and c_time.hour == 20
+                and c_time.minute == 0
+                and c_time.second == 0
+        ):
             return True
         return False
