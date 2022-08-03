@@ -3,7 +3,6 @@ import numpy as np
 
 
 class TakeTemplate:
-
     def as_array(self) -> np.array:
         raise NotImplemented
 
