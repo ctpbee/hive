@@ -2,9 +2,7 @@ import os
 from datetime import datetime
 from json import load
 from time import sleep, time
-from typing import Text, Dict, List
-
-from ctpbee.date import trade_dates
+from typing import Text, Dict
 
 from hive.log import logger
 from hive.task import Task
@@ -16,35 +14,18 @@ class Hive(object):
         self.__wait_task_queue = []
         self._day = []
 
-    def init_from_config(self):
-        """从配置中读取Task任务"""
-
     @staticmethod
     def root_path() -> Text:
         """获取当前的根目录"""
         return os.environ["ROOT_PATH"]
 
-    def insert(self, *task):
-        for ta in task:
-            self.task_set[ta.name] = ta
-
-    def read_config_from_json(self, json_path: Text):
-        """
-        从json文件中获取配置信息
-        """
-        with open(json_path, "r") as fp:
-            data = load(fp=fp)
-        self.read_from_mapping(data)
-
-    def read_from_mapping(self, data: Dict):
-        """从字典中获取配置信息"""
-        for i, v in data.items():
-            setattr(self, i, v)
+    def insert(self, *tasks):
+        for task in tasks:
+            self.task_set[task.name] = task
 
     def run(self):
         """主体运行函数 执行Task"""
         logger.info(f"Hive Started")
-        self.init_from_config()
         while True:
             current = datetime.now()
             for task_name in list(self.task_set.keys()):
@@ -56,6 +37,7 @@ class Hive(object):
                     self.__wait_task_queue.append(task)
                     logger.info(
                         f"task: {task_name} ends and move to next_date")
+
             if current.hour == 2 and current.minute == 40:
                 """ 凌晨2点40 将任务恢复回来 """
                 if len(self.__wait_task_queue) > 0:
