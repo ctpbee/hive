@@ -31,6 +31,8 @@ pip install https://github.com/ctpbee/hive
 > 注意此项目暂时还未完成, 会配合`ctpbee1.6`进行发布. 
 
 
+### 开发者时间和精力有限, 如果你有编程基础 可以申请加入 467026334 一起开发hive for ctpbee, 共同构建轻量化交易系统。   notice: 询问问题别申请加入 并不是用户群。 
+
 # Lincese
 `Mit`
 
