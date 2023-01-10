@@ -2,10 +2,10 @@ from setuptools import setup
 
 pkgs = []
 
-install_requires = ["ctpbee", "redis"]
+install_requires = ["ctpbee", "redis", "click", ]
 setup(
     name="hive",
-    version=0.11,
+    version="0.11",
     description="Auto data service with ctpbee for linux. Do not support windows in here",
     author="somewheve",
     author_email="somewheve@gmail.com",
@@ -28,5 +28,5 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
     ],
-    entry_points={"console_scripts": ["hive = hive.cmd:execute"]},
+    entry_points={"console_scripts": ["hive = hive.cmd:run_command"]},
 )

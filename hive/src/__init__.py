@@ -1,5 +1,4 @@
-
-from src.task import DataInsertTask, CleanDataTask
+from hive.src.task import DataUpdateTask, CleanDataTask
 from hive import Hive
 
 
@@ -9,7 +8,7 @@ class Terminal:
         self.hive = Hive()
 
     def _build_task(self):
-        tasklist = [DataInsertTask(),  CleanDataTask()]
+        tasklist = [DataUpdateTask(), CleanDataTask()]
         self.hive.insert(*tasklist)
 
     def start(self):

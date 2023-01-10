@@ -1,4 +1,6 @@
 from types import FunctionType
+
+from .config import Config
 from .log import logger
 from datetime import datetime
 from multiprocessing import Process
@@ -11,20 +13,22 @@ class Task:
     """
 
     def __init__(
-        self, name: Text
-    ):
+            self, name: Text):
+        """
+        :param name:任务名称
+        """
         self.name = name
         self.create_time = datetime.now()
-        self._pro: None or Process = None
+        self.__process: None or Process = None
 
     def alive(self) -> bool:
-        if self._pro is None:
+        if self.__process is None:
             return False
         else:
-            if self._pro.is_alive():
+            if self.__process.is_alive():
                 return True
             else:
-                self._pro = None
+                self.__process = None
                 return False
 
     def should_run(self, c_time: datetime) -> bool:
@@ -34,20 +38,22 @@ class Task:
     def run(self) -> FunctionType:
         raise NotImplemented
 
-    def _run(self):
-        logger.info(f"task: {self.name} started")
-        self._pro = Process(target=self.run(),daemon=True)
-        self._pro.start()
-
-    def kill(self):
-        logger.info(f"task: {self.name} killed")
-        return self._kill(self._pro)
-
-    def flush(self, c_time: datetime) -> int:
+    def flush(self, c_time: datetime, config: dict) -> int:
         """ 此方法应该被task的提供者进行重写 """
         raise NotImplemented
 
-    def _kill(self, process: Process):
+    def _run(self, config: Config):
+        logger.info(f"task: {self.name} started")
+        function = self.run()
+        self.__process = Process(target=function, args=(dict(config),))
+        self.__process.start()
+
+    def kill(self):
+        logger.info(f"task: {self.name} killed")
+        return self._kill(self.__process)
+
+    @staticmethod
+    def _kill(process: Process):
         return process.kill()
 
     def __repr__(self) -> str:
@@ -56,9 +62,9 @@ class Task:
 
 class LoopTask(Task):
 
-    def flush(self, c_time: datetime) -> int:
+    def flush(self, c_time: datetime, config: Config) -> int:
         if not self.alive() and self.should_run(c_time=c_time):
-            self._run()
+            self._run(config)
             return 1
         elif self.alive() and not self.should_run(c_time=c_time):
             self.kill()
@@ -67,8 +73,9 @@ class LoopTask(Task):
 
 
 class OnceTask(Task):
-    def flush(self, c_time: datetime) -> int:
+
+    def flush(self, c_time: datetime, config: Config) -> int:
         if not self.alive() and self.should_run(c_time=c_time):
-            self._run()
+            self._run(config)
             return -1
         return 0

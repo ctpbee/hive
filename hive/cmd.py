@@ -1,29 +1,26 @@
 """
 Provide easy and fast boot command
 """
-import argparse
-
 from hive.main import Hive
-
-parser = argparse.ArgumentParser(description="hive command~")
-"""
--f 指定参数文件 
--l 设定logger级别 
--c 生成默认配置文件到指定位置
-"""
-parser.add_argument("-f", "-l", "-c", help="for linux usage")
+import click
+from hive.src.task import DataUpdateTask, CleanDataTask
 
 
-def execute():
-    args = parser.parse_args()
+@click.command()
+@click.option("--name", default="hive", prompt="hive")
+@click.option("--path", help="the dirname of file_save_path", default="./")
+@click.option("--ff", help="format of file", default="csv")
+@click.option("--cf", help="config of file", default="config.json")
+@click.option("--mode", default="market",
+              help="work mode, like market(only market support), trade(only trading support), rr(for both of them)",
+              )
+def run_command(name, path, ff, cf, mode):
+    config_file = {"name": name, "output_path": path, "ff": ff, "cf": cf, "mode": mode}
+
+    insert = DataUpdateTask()
+    clean = CleanDataTask()
 
     hive = Hive()
-    for arg in args:
-        if arg == "f":
-            """读取文件配置信息"""
-            hive.read_config_from_json(json_path=arg)
-        if arg == "l":
-            """设置Logger等级"""
-            # todo
-    hive.init_from_config()
+    hive.config.from_mapping(config_file)
+    hive.insert(clean)
     hive.run()
