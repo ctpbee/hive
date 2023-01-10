@@ -1,12 +1,11 @@
 from datetime import datetime
 
 from ctpbee import hickey
+from ctpbee.date import trade_dates
 
 from hive import LoopTask, OnceTask
 from hive.src.env import FILE_CLEAN_TIME
 from hive.src.func import record_data, clean_data_from_redis
-
-from ctpbee.date import trade_dates
 
 
 class DataUpdateTask(LoopTask):

@@ -6,7 +6,7 @@
 # 安装
 
 ```bash
-pip install https://github.com/ctpbee/hive
+pip install git+https://github.com/ctpbee/hive
 ```
 
 # 环境要求
