@@ -11,7 +11,6 @@ class Task:
     """ 
     基础的任务实现  
     """
-
     def __init__(
             self, name: Text):
         """

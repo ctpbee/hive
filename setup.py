@@ -2,7 +2,7 @@ from setuptools import setup
 
 pkgs = []
 
-install_requires = ["ctpbee", "redis", "click", ]
+install_requires = ["ctpbee", "redis", "click", "pandas"]
 setup(
     name="hive",
     version="0.11",

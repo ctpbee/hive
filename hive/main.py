@@ -12,25 +12,20 @@ class Hive(object):
         self.__wait_task_queue = []
         self._day = []
         self._config = Config()
-        self._context = None
 
     @property
     def config(self):
         return self._config
 
-    @property
-    def context(self):
-        return self._context
-
     def insert(self, *tasks):
         for task in tasks:
             self.task_set[task.name] = task
 
-    def reload_context(self):
-        self._context = Context(config=self._config)
+    def remove(self, *name):
+        for i in name:
+            self.task_set.pop(i)
 
     def run(self):
-        """主体运行函数 执行Task"""
         logger.info(f"Hive Started")
         while True:
             current = datetime.now()
@@ -51,7 +46,7 @@ class Hive(object):
                         self.task_set[task.name] = task
                     self.__wait_task_queue.clear()
                     logger.info(f"更新任务队列")
-            # sleep 1 second and reduce usage of cpu
+
             sleep(1)
 
 
@@ -67,5 +62,4 @@ if __name__ == "__main__":
         },
         "MAIL_TITLE": "qmt日内邮件提醒"
     })
-    hive.reload_context()
     hive.run()
