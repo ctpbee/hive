@@ -2,4 +2,6 @@
 .idea
 .vscode
 .egg*
+hive.egg-info
+dist
 __pycache__

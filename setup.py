@@ -5,7 +5,7 @@ pkgs = []
 install_requires = ["ctpbee", "redis", "click", "pandas"]
 setup(
     name="hive",
-    version="0.11",
+    version="0.12",
     description="Auto data service with ctpbee for linux. Do not support windows in here",
     author="somewheve",
     author_email="somewheve@gmail.com",
