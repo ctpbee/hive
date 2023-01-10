@@ -45,7 +45,7 @@ class Task:
     def _run(self, config: Config):
         logger.info(f"task: {self.name} started")
         function = self.run()
-        self.__process = Process(target=function, args=(dict(config),))
+        self.__process = Process(target=function, args=(dict(config),), daemon=True)
         self.__process.start()
 
     def kill(self):
