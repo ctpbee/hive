@@ -25,11 +25,20 @@ class Hive(object):
         for i in self.task_set.values():
             i.terminal()
 
+    def kill(self):
+        for i in self.task_set.values():
+            i.kill()
+
+    def kill_task(self, name):
+        self.task_set[name].kill()
+
     def terminal_task(self, name):
         self.task_set[name].terminal()
 
     def remove(self, *name):
         for i in name:
+            if self.task_set[i].is_alive():
+                self.task_set[i].terminal()
             self.task_set.pop(i)
 
     def run(self):
