@@ -11,6 +11,7 @@ class Task:
     """ 
     基础的任务实现  
     """
+
     def __init__(
             self, name: Text):
         """
@@ -29,6 +30,9 @@ class Task:
             else:
                 self.__process = None
                 return False
+
+    def terminal(self):
+        return self.__process.terminate() if self.__process is not None else 0
 
     def should_run(self, c_time: datetime) -> bool:
         """ 用户应该重写运行逻辑 """

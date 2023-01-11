@@ -8,7 +8,7 @@ from hive.task import Task
 
 class Hive(object):
     def __init__(self):
-        self.task_set = {}
+        self.task_set: {str: Task} = {}
         self.__wait_task_queue = []
         self._day = []
         self._config = Config()
@@ -20,6 +20,13 @@ class Hive(object):
     def insert(self, *tasks):
         for task in tasks:
             self.task_set[task.name] = task
+
+    def terminal(self):
+        for i in self.task_set.values():
+            i.terminal()
+
+    def terminal_task(self, name):
+        self.task_set[name].terminal()
 
     def remove(self, *name):
         for i in name:
