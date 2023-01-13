@@ -55,6 +55,18 @@ class Task:
         logger.info(f"task: {self.name} killed")
         return self._kill(self.__process)
 
+    def after_task_kill(self):
+        pass
+
+    def before_task_kill(self):
+        pass
+
+    def before_task_start(self):
+        pass
+
+    def after_task_start(self):
+        pass
+
     @staticmethod
     def _kill(process: Process):
         return process.kill()
@@ -67,10 +79,14 @@ class LoopTask(Task):
 
     def flush(self, c_time: datetime, config: Config) -> int:
         if not self.alive() and self.should_run(c_time=c_time):
+            self.before_task_start()
             self._run(config)
+            self.after_task_start()
             return 1
         elif self.alive() and not self.should_run(c_time=c_time):
+            self.before_task_kill()
             self.kill()
+            self.after_task_kill()
             return -1
         return 0
 
@@ -79,6 +95,8 @@ class OnceTask(Task):
 
     def flush(self, c_time: datetime, config: Config) -> int:
         if not self.alive() and self.should_run(c_time=c_time):
+            self.before_task_start()
             self._run(config)
+            self.after_task_start()
             return -1
         return 0

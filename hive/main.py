@@ -64,18 +64,3 @@ class Hive(object):
                     logger.info(f"更新任务队列")
 
             sleep(1)
-
-
-if __name__ == "__main__":
-    hive = Hive()
-    hive.config.from_mapping({
-        "MAIL": {
-            "USER_EMAIL": "somewheve@gmail.com",
-            "TO": ["somewheve@gmail.com"],
-            "SERVER_URI": "smtp.exmail.qq.com",
-            "PASSWD": "passwd",
-            "PORT": 465
-        },
-        "MAIL_TITLE": "qmt日内邮件提醒"
-    })
-    hive.run()
