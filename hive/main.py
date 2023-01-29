@@ -23,11 +23,13 @@ class Hive(object):
 
     def terminal(self):
         for i in self.task_set.values():
-            i.terminal()
+            if i is not None:
+                i.terminal()
 
     def kill(self):
         for i in self.task_set.values():
-            i.kill()
+            if i is not None:
+                i.kill()
 
     def kill_task(self, name):
         self.task_set[name].kill()
@@ -45,22 +47,7 @@ class Hive(object):
         logger.info(f"Hive Started")
         while True:
             current = datetime.now()
-            for task_name in list(self.task_set.keys()):
+            for task_name in self.task_set.keys():
                 task: Task = self.task_set[task_name]
-                result = task.flush(c_time=current, config=self.config)
-                if result == -1:
-                    """ delete task from queue """
-                    self.task_set.pop(task.name)
-                    self.__wait_task_queue.append(task)
-                    logger.info(
-                        f"task: {task_name} ends and move to next_date")
-
-            if current.hour == 2 and current.minute == 40:
-                """recover task at 2:40 am """
-                if len(self.__wait_task_queue) > 0:
-                    for task in self.__wait_task_queue:
-                        self.task_set[task.name] = task
-                    self.__wait_task_queue.clear()
-                    logger.info(f"更新任务队列")
-
-            sleep(1)
+                task.flush(c_time=current, config=self.config)
+            sleep(self.config.get("interval", 1))
