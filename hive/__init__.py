@@ -1,7 +1,7 @@
 from .log import logger
 from .main import Hive
 from .task import Task, LoopTask, OnceTask
-
+from .cmd import run_command
 
 CODE_MAP = {
     "SC": {"code": "sc", "exchange": "INE"},

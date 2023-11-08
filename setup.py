@@ -1,6 +1,6 @@
 from setuptools import setup
 
-pkgs = []
+pkgs = ["hive", "hive.src"]
 
 install_requires = ["ctpbee", "redis", "click", "pandas"]
 setup(
@@ -28,5 +28,5 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
     ],
-    entry_points={"console_scripts": ["hive = hive.cmd:run_command"]},
+    entry_points={"console_scripts": ["hive = hive:run_command"]},
 )
