@@ -5,6 +5,8 @@
 # 安装
 
 ```bash
+pip install hive-c
+# or 
 pip install git+https://github.com/ctpbee/hive
 ```
 

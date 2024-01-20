@@ -5,4 +5,5 @@
 hive.egg-info
 dist
 __pycache__
-data
+build
+hive_c*
