@@ -2,6 +2,7 @@ import pandas as pd
 import redis
 from ctpbee import CtpbeeApi, CtpBee, auth_time
 from ctpbee import hickey
+from ctpbee import Mode
 from ctpbee.constant import *
 
 from redis import Redis
@@ -11,7 +12,7 @@ from hive.src.env import RD_CONTRACT_NAME
 
 
 class WorkBench(CtpbeeApi):
-    def __init__(self, name: str, rd: Redis, config):
+    def __init__(self, name: str, rd: Redis, config, subscribe_contract="*"):
         super().__init__("data_update")
         self.name = name
         self.rd = rd
@@ -19,6 +20,7 @@ class WorkBench(CtpbeeApi):
         self.tick_save = config.get("tick_save", False)
         self.tick_dispatch = config.get("tick_dispatch", False)
         self.trade_dispatch = config.get("trade", False)
+        self.subscribe_contract = subscribe_contract
         self.order_mapping = {}
 
     def on_tick(self, tick: TickData) -> None:
@@ -58,11 +60,17 @@ class WorkBench(CtpbeeApi):
         codes = [
             str(x, encoding="utf8") for x in self.rd.lrange(RD_CONTRACT_NAME, 0, -1)
         ]
-        if len(contract.symbol) <= 6:
-            self.action.subscribe(contract.local_symbol)
+        self.action.subscribe(contract.local_symbol)
+        if self.subscribe_contract == "*":
             if contract.local_symbol not in codes:
                 self.rd.rpush(RD_CONTRACT_NAME, contract.local_symbol)
-                self.rd.publish(self.name_info, Message(contract).encode())
+            self.rd.publish(self.name_info, Message(contract).encode())
+            self.info(f"subscribe: {contract.local_symbol}")
+        elif contract.local_symbol in self.subscribe_contract:
+            if contract.local_symbol not in codes:
+                self.rd.rpush(RD_CONTRACT_NAME, contract.local_symbol)
+            self.rd.publish(self.name_info, Message(contract).encode())
+            self.info(f"subscribe: {contract.local_symbol}")
 
 
 def listen_order(app: CtpBee, client: redis.Redis):
@@ -89,10 +97,15 @@ def record_data(config):
     uri = config["redis"]
     host, port = uri.split(":")
     redis_client = Redis(host=host, port=port)
-    app = CtpBee("task", __name__, refresh=True)
+    if config.get("dispatch", False):
+        app = CtpBee("task", __name__, refresh=True, work_mode=Mode.DISPATCHER)
+    else:
+        app = CtpBee("task", __name__, refresh=True)
+
     config_path = os.path.abspath(config["cf"])
     app.config.from_json(config_path)
-    bench = WorkBench(rd=redis_client, name=config["name"], config=config)
+    subscribe_contract = app.config.get("SUBSCRIBE_CONTRACT", "*")
+    bench = WorkBench(rd=redis_client, name=config["name"], subscribe_contract=subscribe_contract, config=config)
     app.add_extension(bench)
     app.start()
     if config.get("trade_dispatch", False):

@@ -8,7 +8,7 @@ RD_CONTRACT_NAME = "contract"
 FILE_SAVE_PATH = "/"
 
 # 数据清洗时间 注意应该在15:05:00 之后 20:30:00之前最好
-FILE_CLEAN_TIME = time(hour=20, minute=0, second=0)
+FILE_CLEAN_TIME = time(hour=15, minute=30, second=0)
 
 DATA_TYPE_KEY = "data_type"
 DATA_FIELD = "data"

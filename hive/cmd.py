@@ -21,23 +21,20 @@ def fix_bool(name):
 @click.option("--ff", help="format of file", default="csv")
 @click.option("--cf", help="config of file", default="config.json")
 @click.option("--rd", help="uri of redis", default="127.0.0.1:6379")
-@click.option("--trade_dispatch", default="false", help="open trade dispatcher or not")
+@click.option("--dispatch", default="false", help="tick/order dispatch")
 @click.option("--tick_save", default="true", help="save tick data or not")
-@click.option("--tick_dispatch", default="false", help="dispatch tick data or not")
-def run_command(name, path, ff, cf, rd, trade_dispatch, tick_save, tick_dispatch):
+def run_command(name, path, ff, cf, rd, dispatch, tick_save):
     if ff not in ["csv", "parquet", "h5"]:
         raise TypeError("错误的文件导出格式 请检查你的ff参数")
-    trade_dispatch = fix_bool(trade_dispatch)
+    dispatch = fix_bool(dispatch)
     tick_save = fix_bool(tick_save)
-    tick_dispatch = fix_bool(tick_dispatch)
     config_file = {"name": name,
                    "path": path,
                    "ff": ff,
                    "cf": cf,
                    "redis": rd,
-                   "trade_dispatch": trade_dispatch,
+                   "dispatch": dispatch,
                    "tick_save": tick_save,
-                   "tick_dispatch": tick_dispatch
                    }
     insert = DataUpdateTask()
     clean = CleanDataTask()
