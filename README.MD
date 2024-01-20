@@ -49,6 +49,10 @@ hive --name hive --path ./data --ff csv --cf config.json --rd 127.0.0.1:6379 --t
 - `tick_save`: 是否开启行情落地功能
 - `trade_dispatch`: 是否开启行情/交易分发功能
 
+### 行情读取
+
+`examples`下面提供了一个`read.py`请参阅此API 自己读取历史数据即可
+
 # License
 
 `Apache2`
