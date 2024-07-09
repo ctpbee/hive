@@ -5,7 +5,7 @@ from ctpbee.date import trade_dates
 
 from hive import LoopTask, OnceTask
 from hive.src.env import FILE_CLEAN_TIME
-from hive.src.func import record_data, clean_data_from_redis
+from hive.src.func import record_data, clean_data_from_redis, auth_time
 
 
 class DataUpdateTask(LoopTask):
@@ -17,7 +17,7 @@ class DataUpdateTask(LoopTask):
         return record_data
 
     def should_run(self, c_time: datetime) -> bool:
-        return hickey.auth_time(c_time)
+        return auth_time(c_time)
 
 
 class CleanDataTask(OnceTask):
