@@ -161,7 +161,7 @@ def clean_data_from_redis(config):
 
 from datetime import datetime, time
 from ctpbee.date import trade_dates
-def auth_time(self, current: datetime):
+def auth_time(current: datetime):
     DAY_START = time(8, 55)  # 日盘启动和停止时间
     DAY_END = time(15, 5)
     NIGHT_START = time(20, 55)  # 夜盘启动和停止时间
