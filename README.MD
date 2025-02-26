@@ -5,8 +5,6 @@
 # 安装
 
 ```bash
-pip3 install hived
-# or 
 pip3 install git+https://github.com/ctpbee/hive
 ```
 
