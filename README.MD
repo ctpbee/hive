@@ -5,7 +5,7 @@
 # 安装
 
 ```bash
-pip install hive-c
+pip install hived-c
 # or 
 pip install git+https://github.com/ctpbee/hive
 ```
@@ -32,7 +32,7 @@ pip install git+https://github.com/ctpbee/hive
 3. 执行下面的命令(可以根据参数解析自己做更改)
 
 ```bash
-hive --name hive --path ./data --ff csv --cf config.json --rd 127.0.0.1:6379 --tick_save true --dispatch true
+hived --name hived --path ./data --ff csv --cf config.json --rd 127.0.0.1:6379 --tick_save true --dispatch true
 ```
 
 ### 如果自己定义订阅指定行情

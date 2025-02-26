@@ -1,6 +1,6 @@
 from setuptools import setup
 
-pkgs = ["hive", "hive.src"]
+pkgs = ["hived", "hived.src"]
 
 install_requires = ["ctpbee", "redis", "click", "pandas"]
 setup(
@@ -13,8 +13,8 @@ setup(
     license="Apache2",
     packages=pkgs,
     install_requires=install_requires,
-    platforms=["Linux", "Windows"],
-    package_dir={"hive": "hive"},
+    platforms=["Linux", "Windows", "MacOS"],
+    package_dir={"hived": "hived"},
     zip_safe=False,
     include_package_data=True,
     ext_modules=[],
@@ -27,7 +27,6 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
     ],
-    entry_points={"console_scripts": ["hive = hive:run_command"]},
+    entry_points={"console_scripts": ["hived = hived:run_command"]},
 )

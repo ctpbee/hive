@@ -6,9 +6,9 @@ from ctpbee import Mode
 from ctpbee.constant import *
 
 from redis import Redis
-from hive.src.obj import Message
-from hive import logger
-from hive.src.env import RD_CONTRACT_NAME
+from hived.src.obj import Message
+from hived import logger
+from hived.src.env import RD_CONTRACT_NAME
 
 
 class WorkBench(CtpbeeApi):

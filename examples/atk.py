@@ -6,8 +6,8 @@ from time import sleep
 from types import FunctionType
 from datetime import time
 
-from hive import Hive
-from hive.task import LoopTask, OnceTask
+from hived import Hive
+from hived.task import LoopTask, OnceTask
 
 import atexit
 

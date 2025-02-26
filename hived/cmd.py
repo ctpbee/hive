@@ -6,9 +6,9 @@ import os.path
 
 import click
 
-from hive.log import logger
-from hive.main import Hive
-from hive.src.task import DataUpdateTask, CleanDataTask
+from hived.log import logger
+from hived.main import Hive
+from hived.src.task import DataUpdateTask, CleanDataTask
 
 bool_map = {"false": False, "true": True}
 
@@ -21,7 +21,7 @@ def fix_bool(name):
 
 
 @click.command()
-@click.option("--name", default="hive", prompt="hive")
+@click.option("--name", default="hived", prompt="hived")
 @click.option("--path", help="the dirname of file_save_path", default="./")
 @click.option("--ff", help="format of file", default="csv")
 @click.option("--cf", help="config of file", default="config.json")
@@ -31,11 +31,16 @@ def fix_bool(name):
 @click.option("--config_path", default="", help="config file path ")
 def run_command(name, path, ff, cf, rd, dispatch, tick_save, config_path):
     if os.path.exists(config_path):
+        logger.info("当前检测到配置文件 读取参数")
         if not config_path.endswith(".json"):
             raise FileNotFoundError("当前配置文件不是json格式")
         with open(config_path, "r") as f:
-            config = json.load(f)
+            try:
+                config = json.load(f)
+            except json.decoder.JSONDecodeError:
+                raise json.decoder.JSONDecodeError("json格式不合法")
     else:
+        logger.info("当前未检测到配置文件 读取参数")
         if ff not in ["csv", "parquet", "h5"]:
             raise TypeError("错误的文件导出格式 请检查你的ff参数")
         dispatch = fix_bool(dispatch)

@@ -1,5 +1,5 @@
-from hive.src.task import DataUpdateTask, CleanDataTask
-from hive import Hive
+from hived.src.task import DataUpdateTask, CleanDataTask
+from hived import Hive
 
 
 class Terminal:

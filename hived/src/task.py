@@ -3,16 +3,16 @@ from datetime import datetime
 from ctpbee import hickey
 from ctpbee.date import trade_dates
 
-from hive import LoopTask, OnceTask
-from hive.src.env import FILE_CLEAN_TIME
-from hive.src.func import record_data, clean_data_from_redis
+from hived import LoopTask, OnceTask
+from hived.src.env import FILE_CLEAN_TIME
+from hived.src.func import record_data, clean_data_from_redis
 
 
 class DataUpdateTask(LoopTask):
     def __init__(self, **kwargs):
         super().__init__("数据录制")
         interface = kwargs.get("interface", "ctp")
-        front = kwargs.get("front", 300)
+        front = kwargs.get("front", 600)
         for i, v in hickey.open_trading[interface].items():
             setattr(hickey, i, hickey.add_seconds(getattr(hickey, i), front))
 

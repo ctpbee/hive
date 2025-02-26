@@ -1,9 +1,9 @@
 from datetime import datetime
 from time import sleep
 
-from hive.config import Config
-from hive.log import logger
-from hive.task import Task
+from hived.config import Config
+from hived.log import logger
+from hived.task import Task
 
 
 class Hive(object):

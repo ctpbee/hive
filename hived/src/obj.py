@@ -5,7 +5,7 @@ import json
 
 from ctpbee.constant import OrderData, Entity, ContractData, TradeData, CancelRequest, OrderRequest, TickData
 
-from hive.src.env import DATA_TYPE_KEY, DATA_FIELD
+from hived.src.env import DATA_TYPE_KEY, DATA_FIELD
 from ctpbee import dumps, loads
 
 
