@@ -4,7 +4,7 @@ pkgs = ["hive", "hive.src"]
 
 install_requires = ["ctpbee", "redis", "click", "pandas"]
 setup(
-    name="hive-c",
+    name="hived",
     version="0.1",
     description="Auto data service with ctpbee for linux. Do not support windows in here",
     author="somewheve",

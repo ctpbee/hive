@@ -9,16 +9,19 @@ from hive.src.func import record_data, clean_data_from_redis
 
 
 class DataUpdateTask(LoopTask):
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__("数据录制")
+        interface = kwargs.get("interface", "ctp")
+        front = kwargs.get("front", 300)
+        for i, v in hickey.open_trading[interface].items():
+            setattr(hickey, i, hickey.add_seconds(getattr(hickey, i), front))
 
     def run(self):
         # 此处实现数据每日自动插入redis
         return record_data
 
     def should_run(self, c_time: datetime) -> bool:
-        # return hickey.auth_time(c_time)
-        return True
+        return hickey.auth_time(c_time)
 
 
 class CleanDataTask(OnceTask):

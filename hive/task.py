@@ -1,10 +1,9 @@
+from datetime import datetime
+from multiprocessing import Process
 from types import FunctionType
 
 from .config import Config
 from .log import logger
-from datetime import datetime
-from multiprocessing import Process
-from typing import Text
 
 
 class Task:
@@ -13,12 +12,12 @@ class Task:
     """
 
     def __init__(
-            self, name: Text):
+            self, name, **kwargs):
         """
         :param name:任务名称
         """
         self.name = name
-        self.create_time = datetime.now()
+        self._create_time = datetime.now()
         self.__process: None or Process = None
 
     def alive(self) -> bool:
@@ -72,7 +71,7 @@ class Task:
         return process.kill()
 
     def __repr__(self) -> str:
-        return f"{self.name} with {self.create_time}"
+        return f"{self.name} with {self._create_time}"
 
 
 class LoopTask(Task):
