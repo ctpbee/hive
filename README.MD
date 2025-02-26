@@ -5,9 +5,9 @@
 # 安装
 
 ```bash
-pip install hived-c
+pip3 install hived
 # or 
-pip install git+https://github.com/ctpbee/hive
+pip3 install git+https://github.com/ctpbee/hive
 ```
 
 # 环境要求
