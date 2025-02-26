@@ -158,3 +158,32 @@ def clean_data_from_redis(config):
         redis_client.delete(contract)
     redis_client.delete(RD_CONTRACT_NAME)
     logger.info("当天数据清理完毕")
+
+from datetime import datetime, time
+from ctpbee.date import trade_dates
+def auth_time(current: datetime):
+    DAY_START = time(8, 55)  # 日盘启动和停止时间
+    DAY_END = time(15, 5)
+    NIGHT_START = time(20, 55)  # 夜盘启动和停止时间
+    NIGHT_END = time(2, 35)
+    current_string = str(current.date())
+    last_day = str((current + timedelta(days=-1)).date())
+    """
+    如果前一天是交易日, 今天不是 那么交易到今晚晚上2点：30
+    
+    如果前一天不是交易日,今天是  那么早盘前 不启动 
+    
+    如果前一天不是交易日, 今天也不是交易日 那么不启动 
+    """
+    if (last_day in trade_dates and current_string not in trade_dates and current.time() > NIGHT_END) or \
+            (last_day not in trade_dates and current_string in trade_dates and current.time() < DAY_START) or \
+            (last_day not in trade_dates and current_string not in trade_dates):
+        return False
+
+    if DAY_END >= current.time() >= DAY_START:
+        return True
+    if current.time() >= NIGHT_START:
+        return True
+    if current.time() <= NIGHT_END:
+        return True
+    return False
