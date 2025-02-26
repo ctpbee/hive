@@ -25,7 +25,7 @@ class DataUpdateTask(LoopTask):
 
 
 class CleanDataTask(OnceTask):
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__("数据清洗")
 
     def run(self):

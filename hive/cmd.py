@@ -49,8 +49,8 @@ def run_command(name, path, ff, cf, rd, dispatch, tick_save, config_path):
                   "tick_save": tick_save,
                   }
     logger.info(f"read config: {config}")
-    insert = DataUpdateTask(config)
-    clean = CleanDataTask(config)
+    insert = DataUpdateTask(**config)
+    clean = CleanDataTask(**config)
     hive = Hive()
     hive.config.from_mapping(config)
     hive.insert(insert, clean)
