@@ -1,14 +1,14 @@
 import pandas as pd
 import redis
 from ctpbee import CtpbeeApi, CtpBee, auth_time
-from ctpbee import hickey
 from ctpbee import Mode
+from ctpbee import hickey
 from ctpbee.constant import *
-
 from redis import Redis
-from hived.src.obj import Message
+
 from hived import logger
 from hived.src.env import RD_CONTRACT_NAME
+from hived.src.obj import Message
 
 
 class WorkBench(CtpbeeApi):
@@ -159,8 +159,11 @@ def clean_data_from_redis(config):
     redis_client.delete(RD_CONTRACT_NAME)
     logger.info("当天数据清理完毕")
 
-from datetime import datetime, time
+
+from datetime import datetime, time, timedelta
 from ctpbee.date import trade_dates
+
+
 def auth_time(current: datetime):
     DAY_START = time(8, 55)  # 日盘启动和停止时间
     DAY_END = time(15, 5)
